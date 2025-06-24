@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinod Nayak Devavath Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #e3fdfd, #ffe6fa);
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px 50px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header .logo {
+            font-weight: 700;
+            font-size: 1.5em;
+        }
+        header nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        header nav .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        header nav .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1;
+        }
+        header nav .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        header nav .dropdown-content a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+        }
+        header nav .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        header .btn {
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 50px;
+        }
+        .hero img {
+            width: 200px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .hero .intro {
+            max-width: 600px;
+        }
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        .section {
+            display: none;
+            padding: 50px;
+            background: #f9f9f9;
+        }
+        .section.active {
+            display: block;
+        }
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .projects-container {
+            display: flex;
+            gap: 20px;
+        }
+        .project-list {
+            flex: 1;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .project-list li {
+            margin-bottom: 10px;
+        }
+        .project-list a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .project-list a:hover {
+            text-decoration: underline;
+        }
+        .project-details-container {
+            flex: 2;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .work-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .work-item {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .work-item img {
+            width: 400px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .work-item h3 {
+            margin: 10px 0;
+        }
+        .work-item p {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .work-item a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .work-item a:hover {
+            text-decoration: underline;
+        }
+        .profile-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #profileImage {
+            width: 200px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            z-index: 1;
+        }
+
+        #profileImage.zoomed {
+            position: relative;
+            width: 400px;
+            z-index: 10;
+            transform: scale(1.5);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Optional: dim background while zoomed */
+        body.zoom-active::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.4);
+            z-index: 5;
+        }
+    </style>
+    <script>
+        function toggleZoom(e) {
+            e.stopPropagation(); // Prevents triggering the body click
+
+            const img = document.getElementById('profileImage');
+            const body = document.body;
+
+            if (img.classList.contains('zoomed')) {
+                img.classList.remove('zoomed');
+                body.classList.remove('zoom-active');
+                document.removeEventListener('click', outsideClickListener);
+            } else {
+                img.classList.add('zoomed');
+                body.classList.add('zoom-active');
+
+                setTimeout(() => {
+                    document.addEventListener('click', outsideClickListener);
+                }, 0);
+            }
+
+            function outsideClickListener(e) {
+                // Close zoom only if clicking outside the image
+                const img = document.getElementById('profileImage');
+                if (!img.contains(e.target)) {
+                    img.classList.remove('zoomed');
+                    document.body.classList.remove('zoom-active');
+                    document.removeEventListener('click', outsideClickListener);
+                }
+            }
+        }
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        }
+
+        function showProjectDetails(projectId) {
+            const projectDetails = {
+                project1: `
+                    <h3>AI-Powered Healthcare Chatbot</h3>
+                    <p>Developed a chatbot leveraging GPT-2 to provide users with accurate responses to medication-related queries. Integrated appointment booking and medication reminder scheduling to enhance functionality. Built user-friendly Flask API endpoints for seamless interaction and integrated Twilio for sending reminders.</p>
+                `,
+                project2: `
+                    <h3>Facial Recognition-based Voting System</h3>
+                    <p>Developed a secure online voting system using facial recognition to enhance election security. Fine-tuned VGG16 on a custom dataset of 6500 images for facial recognition, achieving robust performance under varied conditions.</p>
+                `,
+                project3: `
+                    <h3>Integrated Approach for Suicidal Tendency Detection</h3>
+                    <p>Built a system to detect suicidal intent using facial gestures, text and voice patterns, and a PHQ9 questionnaire. Developed a real-time Android application for user-centric detection.</p>
+                `,
+                project4: `
+                    <h3>Detection of Phishing Websites Using Machine Learning</h3>
+                    <p>Implemented models to detect phishing attacks using Random Forest, Decision Tree, SVM, and Logistic Regression. Achieved the best accuracy of 96.81% using Random Forest.</p>
+                `,
+            };
+            const container = document.querySelector('.project-details-container');
+            container.innerHTML = projectDetails[projectId] || '<p> Select a project to view details.</p>';
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">Vinod Nayak Devavath</div>
+        <nav>
+            <a onclick="showSection('projects')">Projects</a>
+            <a onclick="showSection('skills')">Skills</a>
+            <div class="dropdown">
+                <a>Contact</a>
+                <div class="dropdown-content">
+                    <a href="tel:+1 7167300171">Phone: +1 7167300171</a>
+                    <a href="mailto:d.vinodnayak157@gmail.com">Email: d.vinodnayak157@gmail.com</a>
+                    <a href="https://www.linkedin.com/in/vinodnayakdevavath" target="_blank">LinkedIn</a>
+                    <a href="https://github.com/Vinod-Nayak" target="_blank">GitHub</a>
+                    <a href="https://calendly.com/vinodnayak" target="_blank">Schedule a Meeting</a>
+                </div>
+            </div>
+            <a onclick="showSection('work')" class="btn">View Work</a>
+            <a href="Resume.pdf" download class="btn" title="Download Resume">Resume </a>   
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="profile-container">
+            <img src="graduate_vinod.JPG" alt="Vinod Nayak Profile Picture" id="profileImage" onclick="toggleZoom(event)">
+        </div>
+        <div class="intro">
+            <h1>Hi there!</h1>
+            <p>Passionate about Artificial Intelligence and Machine Learning, I am constantly driven to innovate and make impactful contributions to the tech world. Learn more about my journey below.</p>
+        </div>
+    </section>
+
+    <section id="projects" class="section">
+        <h2>Projects</h2>
+        <div class="projects-container">
+            <!-- Project List -->
+            <ul class="project-list">
+                <li><a href="#" onclick="event.preventDefault(); showProjectDetails('project1')">AI-Powered Healthcare Chatbot</a></li>
+                <li><a href="#" onclick="event.preventDefault(); showProjectDetails('project2')">Facial Recognition-based Voting System</a></li>
+                <li><a href="#" onclick="event.preventDefault(); showProjectDetails('project3')">Integrated Approach for Suicidal Tendency Detection</a></li>
+                <li><a href="#" onclick="event.preventDefault(); showProjectDetails('project4')">Detection of Phishing Websites Using Machine Learning</a></li>
+            </ul>
+            <!-- Project Details -->
+            
+             <div class="project-details-container">
+                <p>Select a project to view details.</p>
+            </div> 
+        </div>
+    </section>
+
+    <section id="skills" class="section">
+        <h2>Skills</h2>
+        <p>Programming Languages: Python, Java, C++, C, Linux, MySQL, ROS</p>
+        <p>Technologies: TensorFlow, PyTorch, OpenCV, SQL, Flask, HuggingFace, Gazebo, RViz, SLAM, LiDAR</p>
+        <p>Development Tools: Jupyter Notebook, Google Colab, VS Code, Git, Docker</p>
+    </section>
+
+    <section id="work" class="section">
+        <h2>View My Work</h2>
+        <div class="work-gallery">
+            <div class="work-item">
+                <img src="aichatbotshealthcare1.png" alt="AI-Powered Healthcare Chatbot">
+                <h3>AI-Powered Healthcare Chatbot</h3>
+                <p>A chatbot leveraging GPT-2 for accurate responses and medication reminders.</p>
+                <a href="https://github.com/Vinod-Nayak/healthcare-chatbot-gpt2" target="_blank">View on GitHub</a>
+            </div>
+            <div class="work-item">
+                <img src="Facevoting.png" alt="Facial Recognition-based Voting System">
+                <h3>Facial Recognition Voting</h3>
+                <p>A secure voting system with facial recognition features.</p>
+                <a href="https://github.com/Vinod-Nayak/facial-recognition-voting-system" target="_blank">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: #333; color: #fff; text-align: center; padding: 20px 0; margin-top: 50px;">
+        <div>
+            <p>&copy; 2025 Vinod Nayak Devavath. All rights reserved.</p>
+            <div style="margin: 10px 0;">
+                <a href="https://www.linkedin.com/in/vinodnayakdevavath" target="_blank" style="color: #fff; margin: 0 10px;">LinkedIn</a>
+                <a href="https://github.com/Vinod-Nayak" target="_blank" style="color: #fff; margin: 0 10px;">GitHub</a>
+                <a href="https://x.com/VinodNayak157" target="_blank" style="color: #fff; margin: 0 10px;">X</a>
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>
